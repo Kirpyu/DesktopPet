@@ -4,6 +4,9 @@
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 
+#include <Dwmapi.h>
+#pragma comment (lib, "Dwmapi.lib")
+
 namespace widget {
 
     Pet::Pet(sf::RenderWindow &w) : window(w), timer(sf::seconds(.1)) {
@@ -20,7 +23,8 @@ namespace widget {
         shape.setFillColor(sf::Color::Green);
         setWindowPos();
 
-        
+        sf::Vector2i grabbedOffset;
+        bool grabbedWindow = false;
 
         while (window.isOpen())
         {
@@ -31,9 +35,23 @@ namespace widget {
                     window.close();
 
                 if (event.type == sf::Event::MouseButtonPressed)
-                    if (checkIfPetInMouse()) {
-                        
+                {
+                    if (event.mouseButton.button == sf::Mouse::Left)
+                    {
+                        grabbedOffset = window.getPosition() - sf::Mouse::getPosition();
+                        grabbedWindow = true;
                     }
+                }
+                else if (event.type == sf::Event::MouseButtonReleased)
+                {
+                    if (event.mouseButton.button == sf::Mouse::Left)
+                        grabbedWindow = false;
+                }
+                else if (event.type == sf::Event::MouseMoved)
+                {
+                    if (grabbedWindow)
+                        window.setPosition(sf::Mouse::getPosition() + grabbedOffset);
+                }
             }
 
             // and if stopped == false
@@ -45,10 +63,10 @@ namespace widget {
             
  /*           renderPet();*/
 
-            //sf::Sprite sprite_array[] = { sprite1, sprite2 , sprite3, sprite4, sprite5, sprite6, sprite7, sprite8};
+            //sf::Sprite spriteArray[] = { sprite1, sprite2 , sprite3, sprite4, sprite5, sprite6, sprite7, sprite8};
             //
             //
-            //int frame = texture_pointer % std::size(sprite_array);
+            //int frame = texturePointer % std::size(spriteArray);
 
             window.draw(currentSprite);
             window.display();
@@ -76,17 +94,11 @@ namespace widget {
         sprite8.setTexture(texture8);
 
         sprite1.setScale(3, 3);
-        /*sprite1.setPosition(sf::Vector2f(75, 75));*/
+
         currentSprite = sprite1;
-        //sprite1.setScale(3, 3);
-        //sprite2.setScale(3, 3);
-        //sprite3.setScale(3, 3);
-        //sprite4.setScale(3, 3);
-        //sprite5.setScale(3, 3);
-        //sprite6.setScale(3, 3);
-        //sprite7.setScale(3, 3);
-        //sprite8.setScale(3, 3);
     }
+
+    //Checks if pet is inside mouse, then returns a bool value, kidna useless
     bool Pet::checkIfPetInMouse() {
         sf::Vector2i mousePos = sf::Mouse::getPosition();
 
@@ -101,51 +113,76 @@ namespace widget {
         // draw it onto the frame
     }
 
+    //updates the pets texture and position
     void Pet::updatePet() {
-        bool flipped = false;
-
         if ((rand() % 2) == 0) {
-            if (window.getPosition().x < desktop_width - window.getSize().x) {
-                window.setPosition(sf::Vector2i(window.getPosition().x + move_amount, window.getPosition().y));
+            //while the window's x coordinate is less than the window's size, then move pet towards the right, else move it left because theres no space on the right
+            if (window.getPosition().x < desktopWidth - window.getSize().x) {
+                if (currentMoveAmount == 0) {
+                    direction = RIGHT;
+                }
             }
             else {
-                window.setPosition(sf::Vector2i(window.getPosition().x - move_amount, window.getPosition().y));
-                flipped = true;
+                direction = LEFT;
             }
         }
+
         else {
-            if (window.getPosition().x > 0) {
-                window.setPosition(sf::Vector2i(window.getPosition().x - move_amount, window.getPosition().y));
-                flipped = true;
+            if (window.getPosition().x > window.getSize().x) {
+                if (currentMoveAmount == 0) {
+                    direction = LEFT;
+                }
             }
             else {
-                window.setPosition(sf::Vector2i(window.getPosition().x + move_amount, window.getPosition().y));
+                direction = RIGHT;
             }
         }
-        updateTexture(flipped);
+
+        currentMoveAmount += 1;
+        movePet();
+        updateTexture();
+        if (currentMoveAmount >= maxMoveAmount) {
+            currentMoveAmount = 0;
+        }
     }
 
-    void Pet::updateTexture(bool flipped) {
-        texture_pointer += 1;
-        sf::Sprite sprite_array[] = { sprite1, sprite2 , sprite3, sprite4, sprite5, sprite6, sprite7, sprite8 };
+    //moves the window the pet is in
+    void Pet::movePet() {
+        
+        switch (direction) {
+        case LEFT:
+            window.setPosition(sf::Vector2i(window.getPosition().x - moveDistance, window.getPosition().y));
+            break;
+        case RIGHT:
+            window.setPosition(sf::Vector2i(window.getPosition().x + moveDistance, window.getPosition().y));
+            break;  
+        }
 
-        int frame = texture_pointer % std::size(sprite_array);
-        currentSprite = sprite_array[frame];
-        if (flipped == true) {
-            currentSprite.setScale(3, 3);
-            
-        } else {
+
+    }
+
+    //updates the pets texture
+    void Pet::updateTexture() {
+        texturePointer += 1;
+        sf::Sprite spriteArray[] = { sprite1, sprite2 , sprite3, sprite4, sprite5, sprite6, sprite7, sprite8 };
+
+        int frame = texturePointer % std::size(spriteArray);
+        currentSprite = spriteArray[frame];
+
+        switch (direction) {
+        case RIGHT:
             currentSprite.setScale(-3, 3);
             //u get 72 by getting the sprite size (24,24) then multiplying it by the sclae (3)
             currentSprite.move(sf::Vector2f(72, 0));
-
-            
+            break;
+        case LEFT:
+            currentSprite.setScale(3, 3);
+            break;
         }
-        std::cout << currentSprite.getPosition().y << std::endl;
     }
 
     void Pet::setWindowPos() {
-        window.setPosition(sf::Vector2i(desktop_width - window.getSize().x, desktop_height - window.getSize().y - 100));
+        window.setPosition(sf::Vector2i(desktopWidth - window.getSize().x, desktopHeight - window.getSize().y - 100));
 
     }
 }

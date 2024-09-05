@@ -16,19 +16,27 @@ namespace widget {
 	private:
 		sf::RenderWindow &window;
 		void updatePet();
+		void movePet();
 		void renderPet();
 		bool checkIfPetInMouse();
 		void setWindowPos();
 		void initSprite();
-		void updateTexture(bool flipped);
+		void updateTexture();
 		
 		widget::Timer timer;
 		//create an array that contains all the images, then go through the images lol,4
 		//if deducting x, then use flipped 
 
-		int desktop_width = sf::VideoMode::getDesktopMode().width;
-		int desktop_height = sf::VideoMode::getDesktopMode().height;
-		int move_amount = 8;
+		const int desktopWidth = sf::VideoMode::getDesktopMode().width;
+		const int desktopHeight = sf::VideoMode::getDesktopMode().height;
+		int moveDistance = 8;
+
+		int maxMoveAmount = 20;
+		int currentMoveAmount = 0;
+
+		enum Direction {LEFT, RIGHT};
+		Direction direction;
+
 		sf::Texture texture1;
 		sf::Texture texture2;
 		sf::Texture texture3;
@@ -38,7 +46,7 @@ namespace widget {
 		sf::Texture texture7;
 		sf::Texture texture8;
 
-		int texture_pointer = 0;
+		int texturePointer = 0;
 		sf::Sprite sprite1;
 		sf::Sprite sprite2;
 		sf::Sprite sprite3;

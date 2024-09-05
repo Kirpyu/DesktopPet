@@ -11,8 +11,8 @@ namespace widget {
 		~Timer();
 		bool timerElapsed();
 	private:
-		sf::Time wait_time;
-		sf::Time elapsed_time;
+		sf::Time waitTime;
+		sf::Time elapsedTime;
 		sf::Clock clock;
 	};
 }
