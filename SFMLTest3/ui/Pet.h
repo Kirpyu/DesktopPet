@@ -23,7 +23,7 @@ namespace widget {
 		void initSprite();
 		void initTexture();
 		void updateTexture();
-		void createSprite(std::string textureResource, int frame);
+		void createSprite(sf::Texture textureResource, int frame);
 		
 		widget::Timer timer;
 		//create an array that contains all the images, then go through the images lol,4

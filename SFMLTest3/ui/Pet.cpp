@@ -99,21 +99,26 @@ namespace widget {
             }
 
             window.clear(sf::Color::Transparent);
-
-            window.draw(currentSprite);
+            renderPet();
             window.display();
         }
     }
 
     //brute forced
     void Pet::initSprite() {
-        //for (std::string textureResource : spriteResource) {
-        //    createSprite(textureResource, count);
-        //}
+
         initTexture();
-        createSprite(spriteResource[0], 0);
+        int count = 0;
+        for (std::string textureResource : spriteResource) {
+            createSprite(textureVector[count], count);
+            count += 1;
+        }
+
+        //initialize
+        currentSprite = spriteVector[0];
     }
 
+    //create the vector of textures to use
     void Pet::initTexture() {
         for (std::string textureImage : spriteResource) {
             sf::Texture texture;
@@ -122,15 +127,15 @@ namespace widget {
         }
     }
 
-    //creates the sprite
-    void Pet::createSprite(std::string textureResource, int frame) {
+    //creates the vector of sprites to use
+    void Pet::createSprite(sf::Texture textureResource, int frame) {
         sf::Sprite sprite;
 
         //textures must be able to be globally accessed, hence the vector
         sprite.setTexture(textureVector[frame]);
         sprite.setScale(3, 3);
 
-        currentSprite = sprite;
+        spriteVector.push_back(sprite);
     }
 
     //Checks if pet is inside mouse, then returns a bool value, kidna useless
@@ -144,8 +149,9 @@ namespace widget {
         return false;
     }
 
+    //draws the updated pet into frame
     void Pet::renderPet() {
-        // draw it onto the frame
+        window.draw(currentSprite);
     }
 
     //updates the pets texture and position
@@ -173,6 +179,7 @@ namespace widget {
             }
         }
 
+        //makes the sprite move a certain amount so it doesnt just jitter, i can make this randomized in the future
         currentMoveAmount += 1;
         movePet();
         updateTexture();
@@ -202,7 +209,8 @@ namespace widget {
         spritePointer += 1;
         int frame = spritePointer % std::size(spriteResource);
 
-        createSprite(spriteResource[frame], frame);
+        /*createSprite(spriteResource[frame], frame);*/
+        currentSprite = spriteVector[frame];
 
         switch (direction) {
         case RIGHT:
