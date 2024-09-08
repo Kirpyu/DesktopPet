@@ -21,7 +21,9 @@ namespace widget {
 		bool checkIfPetInMouse();
 		void setWindowPos();
 		void initSprite();
+		void initTexture();
 		void updateTexture();
+		void createSprite(std::string textureResource, int frame);
 		
 		widget::Timer timer;
 		//create an array that contains all the images, then go through the images lol,4
@@ -37,26 +39,13 @@ namespace widget {
 		enum Direction {LEFT, RIGHT};
 		Direction direction;
 
-		sf::Texture texture1;
-		sf::Texture texture2;
-		sf::Texture texture3;
-		sf::Texture texture4;
-		sf::Texture texture5;
-		sf::Texture texture6;
-		sf::Texture texture7;
-		sf::Texture texture8;
-
-		int texturePointer = 0;
-		sf::Sprite sprite1;
-		sf::Sprite sprite2;
-		sf::Sprite sprite3;
-		sf::Sprite sprite4;
-		sf::Sprite sprite5;
-		sf::Sprite sprite6;
-		sf::Sprite sprite7;
-		sf::Sprite sprite8;
-
 		sf::Sprite currentSprite;
+
+		int spritePointer = 0;
+		std::vector<sf::Sprite> spriteVector;
+		const std::vector<std::string> spriteResource = { "resource/walking-Sheet-2 Copy1.png", "resource/walking-Sheet-2 Copy2.png" , "resource/walking-Sheet-2 Copy3.png" , "resource/walking-Sheet-2 Copy4.png" , "resource/walking-Sheet-2 Copy5.png", "resource/walking-Sheet-2 Copy6.png", "resource/walking-Sheet-2 Copy7.png", "resource/walking-Sheet-2 Copy8.png" };
+
+		std::vector<sf::Texture> textureVector;
 	};
 }
 

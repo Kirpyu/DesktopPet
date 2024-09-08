@@ -4,11 +4,14 @@
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 
+#include <windows.h>
+#include <commdlg.h>
 #include <Dwmapi.h>
 #pragma comment (lib, "Dwmapi.lib")
 
 namespace widget {
 
+    //when initialized, spawn in the sprites too
     Pet::Pet(sf::RenderWindow &w) : window(w), timer(sf::seconds(.1)) {
 
     }
@@ -41,6 +44,42 @@ namespace widget {
                         grabbedOffset = window.getPosition() - sf::Mouse::getPosition();
                         grabbedWindow = true;
                     }
+
+                    if (event.mouseButton.button == sf::Mouse::Right)
+                    {
+                        OPENFILENAME ofn;       // common dialog box structure
+                        wchar_t szFile[260];       // buffer for file name
+
+                        // Initialize OPENFILENAME
+                        ZeroMemory(&ofn, sizeof(ofn));
+                        ofn.lStructSize = sizeof(ofn);
+                        ofn.lpstrFile = szFile;
+                        ofn.lpstrFile[0] = '\0';
+                        ofn.nMaxFile = sizeof(szFile);
+                        ofn.lpstrFilter = L"Iamges\0*.png\0";
+                        ofn.nFilterIndex = 1;
+                        ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT | OFN_EXPLORER;
+
+                        // Display the Open dialog box. 
+
+                        if (GetOpenFileName(&ofn) == TRUE) {
+                            wchar_t * str = ofn.lpstrFile;
+                            std::wstring directory = str;
+                            // goes to the file name, prints out the entire file name if pointer lands on it, starting from where it lands, +1 because there is a buffer of /0 which is null
+                            str += (directory.length() + 1);
+                            while (*str) {
+
+                                //gets the current file name we are on
+                                std::wstring filename = str;
+                                
+                                //since pointer does not move yet, print the current one
+                                std::wcout << directory + L"\\" + str << std::endl;
+
+                                //go to the next 
+                                str += (filename.length() + 1);
+                            }
+                        }
+                    }
                 }
                 else if (event.type == sf::Event::MouseButtonReleased)
                 {
@@ -60,13 +99,6 @@ namespace widget {
             }
 
             window.clear(sf::Color::Transparent);
-            
- /*           renderPet();*/
-
-            //sf::Sprite spriteArray[] = { sprite1, sprite2 , sprite3, sprite4, sprite5, sprite6, sprite7, sprite8};
-            //
-            //
-            //int frame = texturePointer % std::size(spriteArray);
 
             window.draw(currentSprite);
             window.display();
@@ -75,27 +107,30 @@ namespace widget {
 
     //brute forced
     void Pet::initSprite() {
-        texture1.loadFromFile("resource/walking-Sheet-2 Copy1.png");
-        texture2.loadFromFile("resource/walking-Sheet-2 Copy2.png");
-        texture3.loadFromFile("resource/walking-Sheet-2 Copy3.png");
-        texture4.loadFromFile("resource/walking-Sheet-2 Copy4.png");
-        texture5.loadFromFile("resource/walking-Sheet-2 Copy5.png");
-        texture6.loadFromFile("resource/walking-Sheet-2 Copy6.png");
-        texture7.loadFromFile("resource/walking-Sheet-2 Copy7.png");
-        texture8.loadFromFile("resource/walking-Sheet-2 Copy8.png");
-        
-        sprite1.setTexture(texture1);
-        sprite2.setTexture(texture2);
-        sprite3.setTexture(texture3);
-        sprite4.setTexture(texture4);
-        sprite5.setTexture(texture5);
-        sprite6.setTexture(texture6);
-        sprite7.setTexture(texture7);
-        sprite8.setTexture(texture8);
+        //for (std::string textureResource : spriteResource) {
+        //    createSprite(textureResource, count);
+        //}
+        initTexture();
+        createSprite(spriteResource[0], 0);
+    }
 
-        sprite1.setScale(3, 3);
+    void Pet::initTexture() {
+        for (std::string textureImage : spriteResource) {
+            sf::Texture texture;
+            texture.loadFromFile(textureImage);
+            textureVector.push_back(texture);
+        }
+    }
 
-        currentSprite = sprite1;
+    //creates the sprite
+    void Pet::createSprite(std::string textureResource, int frame) {
+        sf::Sprite sprite;
+
+        //textures must be able to be globally accessed, hence the vector
+        sprite.setTexture(textureVector[frame]);
+        sprite.setScale(3, 3);
+
+        currentSprite = sprite;
     }
 
     //Checks if pet is inside mouse, then returns a bool value, kidna useless
@@ -163,16 +198,16 @@ namespace widget {
 
     //updates the pets texture
     void Pet::updateTexture() {
-        texturePointer += 1;
-        sf::Sprite spriteArray[] = { sprite1, sprite2 , sprite3, sprite4, sprite5, sprite6, sprite7, sprite8 };
 
-        int frame = texturePointer % std::size(spriteArray);
-        currentSprite = spriteArray[frame];
+        spritePointer += 1;
+        int frame = spritePointer % std::size(spriteResource);
+
+        createSprite(spriteResource[frame], frame);
 
         switch (direction) {
         case RIGHT:
             currentSprite.setScale(-3, 3);
-            //u get 72 by getting the sprite size (24,24) then multiplying it by the sclae (3)
+            //u get 72 by getting the sprite size (24,24) then multiplying it by the scale (3)
             currentSprite.move(sf::Vector2f(72, 0));
             break;
         case LEFT:
