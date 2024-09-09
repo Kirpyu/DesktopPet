@@ -22,6 +22,7 @@ namespace widget {
     }
 
     void Pet::initPet() {
+
         srand((unsigned int)time(NULL));
         initSprite();
         sf::CircleShape shape(100.f);

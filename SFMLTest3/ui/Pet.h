@@ -3,6 +3,8 @@
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 #include "../model/Timer.h"
+#include <filesystem>
+
 
 namespace widget {
 	class Pet
@@ -27,7 +29,6 @@ namespace widget {
 		void updateTexture();
 		void createSprite(sf::Texture textureResource, int frame);
 		
-		
 		widget::Timer timer;
 		//create an array that contains all the images, then go through the images lol,4
 		//if deducting x, then use flipped 
@@ -46,7 +47,13 @@ namespace widget {
 
 		int spritePointer = 0;
 		std::vector<sf::Sprite> spriteVector;
-		std::vector<std::string> spriteResource = { "C:/Users/likyl/source/repos/SFMLTest3/SFMLTest3/resource/walking-Sheet-2 Copy1.png", "resource/walking-Sheet-2 Copy2.png" , "resource/walking-Sheet-2 Copy3.png" , "resource/walking-Sheet-2 Copy4.png" , "resource/walking-Sheet-2 Copy5.png", "resource/walking-Sheet-2 Copy6.png", "resource/walking-Sheet-2 Copy7.png", "resource/walking-Sheet-2 Copy8.png" };
+
+		const std::filesystem::path resourcePath = std::filesystem::current_path() / "resource";
+		const std::filesystem::path absolutePath = std::filesystem::absolute(resourcePath);
+
+		std::vector<std::string> spriteResource = { (resourcePath / "walking-Sheet-2 Copy1.png").string(),
+			(resourcePath / "walking-Sheet-2 Copy2.png").string() , (resourcePath / "walking-Sheet-2 Copy3.png").string() , (resourcePath / "walking-Sheet-2 Copy4.png").string() ,
+			(resourcePath / "walking-Sheet-2 Copy5.png").string(), (resourcePath / "walking-Sheet-2 Copy6.png").string(), (resourcePath / "walking-Sheet-2 Copy7.png").string(), (resourcePath / "walking-Sheet-2 Copy8.png").string() };
 
 		std::vector<sf::Texture> textureVector;
 	};

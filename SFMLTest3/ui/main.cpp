@@ -13,9 +13,6 @@
 #include <Dwmapi.h>
 #pragma comment (lib, "Dwmapi.lib")
 
-void testFunc() {
-
-}
 void createPet() {
     sf::RenderWindow window(sf::VideoMode(72, 72), "Desktop Cat",sf :: Style :: None);
 
@@ -44,7 +41,7 @@ std::vector<std::string> openFile() {
     ofn.lpstrFile = szFile;
     ofn.lpstrFile[0] = '\0';
     ofn.nMaxFile = sizeof(szFile);
-    ofn.lpstrFilter = L"Iamges\0*.png\0";
+    ofn.lpstrFilter = L"Images\0*.png\0";
     ofn.nFilterIndex = 1;
     ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT | OFN_EXPLORER;
 
@@ -55,17 +52,27 @@ std::vector<std::string> openFile() {
         std::wstring directory = str;
         // goes to the file name, prints out the entire file name if pointer lands on it, starting from where it lands, +1 because there is a buffer of /0 which is null
         str += (directory.length() + 1);
+
+        using convert_type = std::codecvt_utf8<wchar_t>;
+        std::wstring_convert<convert_type, wchar_t> converter;
+
+        //check if only one file is selected, because str would return false on loop start if only selecting one file
+        // this works because str is already getting the next file, but since theres none, then itll return nothing
+
+        if (!*str) {
+            std::string convertedString = converter.to_bytes(directory);
+            tempVector.push_back(convertedString);
+        }
+
         while (*str) {
 
             //gets the current file name we are on
             std::wstring filename = str;
 
-            //since pointer does not move yet, print the current one
-            std::wcout << directory + L"\\" + str << std::endl;
+            ////since pointer does not move yet, print the current one, debugger
+            //std::wcout << directory + L"\\" + str << std::endl;
 
             //setup converter
-            using convert_type = std::codecvt_utf8<wchar_t>;
-            std::wstring_convert<convert_type, wchar_t> converter;
 
             //use converter (.to_bytes: wstr->str, .from_bytes: str->wstr)
             std::string convertedString = converter.to_bytes(directory + L"\\" + str);
@@ -80,22 +87,80 @@ std::vector<std::string> openFile() {
     return tempVector;
 }
 
+//std::vector<std::string> openFile() {
+//
+//    std::vector<std::string> tempVector;
+//
+//    OPENFILENAME ofn;       // common dialog box structure
+//    char szFile[260];       // buffer for file name
+//
+//    // Initialize OPENFILENAME
+//    ZeroMemory(&ofn, sizeof(ofn));
+//    ofn.lStructSize = sizeof(ofn);
+//    ofn.lpstrFile = szFile;
+//    ofn.lpstrFile[0] = '\0';
+//    ofn.nMaxFile = sizeof(szFile);
+//    ofn.lpstrFilter = "Images\0*.png\0";
+//    ofn.nFilterIndex = 1;
+//    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT | OFN_EXPLORER;
+//
+//    // Display the Open dialog box. 
+//
+//    if (GetOpenFileName(&ofn) == TRUE) {
+//        char* str = ofn.lpstrFile;
+//        std::string directory = str;
+//        // goes to the file name, prints out the entire file name if pointer lands on it, starting from where it lands, +1 because there is a buffer of /0 which is null
+//        str += (directory.length() + 1);
+//
+//        //check if only one file is selected, because str would return false on loop start if only selecting one file
+//        // this works because str is already getting the next file, but since theres none, then itll return nothing
+//
+//        if (!*str) {
+//            tempVector.push_back(directory);
+//        }
+//
+//        while (*str) {
+//
+//            //gets the current file name we are on
+//            std::string filename = str;
+//
+//            ////since pointer does not move yet, print the current one, debugger
+//            //std::wcout << directory + L"\\" + str << std::endl;
+//
+//            //setup converter
+//
+//            //use converter (.to_bytes: wstr->str, .from_bytes: str->wstr)
+//
+//            tempVector.push_back(directory + "\\" + str);
+//
+//            //go to the next 
+//            str += (filename.length() + 1);
+//        }
+//    }
+//
+//    return tempVector;
+//}
+
 void createCustomPet() {
 
-    sf::RenderWindow window(sf::VideoMode(72, 72), "Desktop Cat", sf::Style::None);
+    std::vector<std::string>  selectedFile;
+    selectedFile = openFile();
+    if (selectedFile.size() >= 1) {
+        sf::RenderWindow window(sf::VideoMode(72, 72), "Desktop Cat", sf::Style::None);
 
-    MARGINS margins;
-    margins.cxLeftWidth = -1;
+        MARGINS margins;
+        margins.cxLeftWidth = -1;
 
-    SetWindowLong(window.getSystemHandle(), GWL_STYLE, WS_POPUP | WS_VISIBLE);
-    DwmExtendFrameIntoClientArea(window.getSystemHandle(), &margins);
+        SetWindowLong(window.getSystemHandle(), GWL_STYLE, WS_POPUP | WS_VISIBLE);
+        DwmExtendFrameIntoClientArea(window.getSystemHandle(), &margins);
 
-    //creates a variable named pet and uses its constructor, similar to Pet pet = new Pet(window)
-    widget::Pet pet(window);
+        //creates a variable named pet and uses its constructor, similar to Pet pet = new Pet(window)
+        widget::Pet pet(window);
 
-    //to make this better in the future, change it the window size to whtever the selected sprite size is, then adjust from there
-    pet.changeResource(openFile());
-    pet.initPet();
+        //to make this better in the future, change it the window size to whtever the selected sprite size is, then adjust from there
+        pet.changeResource(selectedFile);
+        pet.initPet();
+    }
 }
 
 int main() {
