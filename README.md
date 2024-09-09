@@ -15,3 +15,7 @@
 1. Download the testCustomizedSprite.zip file and unzip it
 2. Launch SFMLTest3.exe and use the right mouse button on the white box
 3. Select all the files in the previously unzipped testCustomized.zip file and select open
+
+### File Upload Specification:
+- .PNG files
+- Optimized for 24x24 Sprites with 8 frames, although other sizes may work
