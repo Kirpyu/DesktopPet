@@ -10,6 +10,7 @@ namespace widget {
 	public:
 		Pet(sf::RenderWindow& w);
 		void initPet();
+		void closeWindow();
 		~Pet();
 	
 

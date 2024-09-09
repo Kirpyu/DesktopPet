@@ -36,6 +36,9 @@
     <ClCompile Include="ui\main.cpp">
       <Filter>Source Files\ui</Filter>
     </ClCompile>
+    <ClCompile Include="ui\PetManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="model\Timer.h">
@@ -43,6 +46,9 @@
     </ClInclude>
     <ClInclude Include="ui\Pet.h">
       <Filter>Header Files\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\PetManager.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

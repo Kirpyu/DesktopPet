@@ -13,11 +13,10 @@ namespace widget {
 
     //when initialized, spawn in the sprites too
     Pet::Pet(sf::RenderWindow &w) : window(w), timer(sf::seconds(.1)) {
-
+        
     }
 
     Pet::~Pet() {
-
     }
 
     void Pet::initPet() {
@@ -47,38 +46,7 @@ namespace widget {
 
                     if (event.mouseButton.button == sf::Mouse::Right)
                     {
-                        OPENFILENAME ofn;       // common dialog box structure
-                        wchar_t szFile[260];       // buffer for file name
-
-                        // Initialize OPENFILENAME
-                        ZeroMemory(&ofn, sizeof(ofn));
-                        ofn.lStructSize = sizeof(ofn);
-                        ofn.lpstrFile = szFile;
-                        ofn.lpstrFile[0] = '\0';
-                        ofn.nMaxFile = sizeof(szFile);
-                        ofn.lpstrFilter = L"Iamges\0*.png\0";
-                        ofn.nFilterIndex = 1;
-                        ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT | OFN_EXPLORER;
-
-                        // Display the Open dialog box. 
-
-                        if (GetOpenFileName(&ofn) == TRUE) {
-                            wchar_t * str = ofn.lpstrFile;
-                            std::wstring directory = str;
-                            // goes to the file name, prints out the entire file name if pointer lands on it, starting from where it lands, +1 because there is a buffer of /0 which is null
-                            str += (directory.length() + 1);
-                            while (*str) {
-
-                                //gets the current file name we are on
-                                std::wstring filename = str;
-                                
-                                //since pointer does not move yet, print the current one
-                                std::wcout << directory + L"\\" + str << std::endl;
-
-                                //go to the next 
-                                str += (filename.length() + 1);
-                            }
-                        }
+                        closeWindow();
                     }
                 }
                 else if (event.type == sf::Event::MouseButtonReleased)
@@ -227,6 +195,10 @@ namespace widget {
     void Pet::setWindowPos() {
         window.setPosition(sf::Vector2i(desktopWidth - window.getSize().x, desktopHeight - window.getSize().y - 100));
 
+    }
+
+    void Pet::closeWindow() {
+        window.close();
     }
 }
 

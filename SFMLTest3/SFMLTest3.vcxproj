@@ -133,11 +133,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ui\PetManager.cpp" />
     <ClCompile Include="ui\main.cpp" />
     <ClCompile Include="ui\Pet.cpp" />
     <ClCompile Include="model\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ui\PetManager.h" />
     <ClInclude Include="ui\Pet.h" />
     <ClInclude Include="model\Timer.h" />
   </ItemGroup>

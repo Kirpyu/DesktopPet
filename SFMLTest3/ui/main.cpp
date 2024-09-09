@@ -2,7 +2,9 @@
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 #include "Pet.h"
+#include "PetManager.h"
 
+#include <thread>
 #include <windows.h>
 #include <commdlg.h>
 #include <iostream>
@@ -10,8 +12,10 @@
 #include <Dwmapi.h>
 #pragma comment (lib, "Dwmapi.lib")
 
-int main() {
+void testFunc() {
 
+}
+void createPet() {
     sf::RenderWindow window(sf::VideoMode(72, 72), "Desktop Cat",sf :: Style :: None);
 
     MARGINS margins;
@@ -22,34 +26,78 @@ int main() {
 
     //creates a variable named pet and uses its constructor, similar to Pet pet = new Pet(window)
     widget::Pet pet(window);
+
     pet.initPet();
+}
 
-    //OPENFILENAME ofn;
-    //wchar_t szFile[260] = L"";
+void openFile() {
+    OPENFILENAME ofn;       // common dialog box structure
+    wchar_t szFile[260];       // buffer for file name
 
-    //// Initialize OPENFILENAME
-    //ZeroMemory(&ofn, sizeof(ofn));
-    //ofn.lStructSize = sizeof(ofn);
-    //ofn.hwndOwner = NULL;  // Handle to the parent window (NULL for none)
-    //ofn.lpstrFile = szFile;
-    //ofn.lpstrFile[0] = '\0';  // Initialize with an empty string
-    //ofn.nMaxFile = sizeof(szFile);
-    //ofn.lpstrFilter = L"All Files\0*.*\0Text Files\0*.TXT\0";  // File filters
-    //ofn.nFilterIndex = 1;  // Default filter index
-    //ofn.lpstrFileTitle = NULL;
-    //ofn.nMaxFileTitle = 0;
-    //ofn.lpstrInitialDir = NULL;  // Initial directory
-    //ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;  // Flags
+    // Initialize OPENFILENAME
+    ZeroMemory(&ofn, sizeof(ofn));
+    ofn.lStructSize = sizeof(ofn);
+    ofn.lpstrFile = szFile;
+    ofn.lpstrFile[0] = '\0';
+    ofn.nMaxFile = sizeof(szFile);
+    ofn.lpstrFilter = L"Iamges\0*.png\0";
+    ofn.nFilterIndex = 1;
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT | OFN_EXPLORER;
 
-    //// Display the Open dialog box
-    //if (GetOpenFileName(&ofn)) {
-    //    std::cout << "Selected file: " << ofn.lpstrFile << std::endl;
-    //}
-    //else {
-    //    std::cout << "No file selected or dialog canceled." << std::endl;
-    //}
+    // Display the Open dialog box. 
 
-    
+    if (GetOpenFileName(&ofn) == TRUE) {
+        wchar_t* str = ofn.lpstrFile;
+        std::wstring directory = str;
+        // goes to the file name, prints out the entire file name if pointer lands on it, starting from where it lands, +1 because there is a buffer of /0 which is null
+        str += (directory.length() + 1);
+        while (*str) {
+
+            //gets the current file name we are on
+            std::wstring filename = str;
+
+            //since pointer does not move yet, print the current one
+            std::wcout << directory + L"\\" + str << std::endl;
+
+            //go to the next 
+            str += (filename.length() + 1);
+        }
+    }
+}
+
+int main() {
+    sf::RenderWindow window(sf::VideoMode(250,100), "Desktop Cat", sf::Style::Titlebar | sf::Style::Close);
+    manager::PetManager manager(window);
+
+    while (window.isOpen())
+    {
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed) {
+                window.close();
+            }
+
+            if (event.type == sf::Event::MouseButtonPressed)
+            {
+                if (event.mouseButton.button == sf::Mouse::Left)
+                {
+                    std::thread thread(&createPet);
+                    thread.detach();
+                }
+
+                if (event.mouseButton.button == sf::Mouse::Right)
+                {
+                    openFile();
+                }
+            }
+        }
+    }
+
+    while (true) {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
 
     return 0;
 }
+
