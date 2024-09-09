@@ -12,6 +12,7 @@ namespace widget {
 		void initPet();
 		void closeWindow();
 		~Pet();
+		void changeResource(std::vector<std::string> resourceVector);
 	
 
 	private:
@@ -25,6 +26,7 @@ namespace widget {
 		void initTexture();
 		void updateTexture();
 		void createSprite(sf::Texture textureResource, int frame);
+		
 		
 		widget::Timer timer;
 		//create an array that contains all the images, then go through the images lol,4
@@ -44,7 +46,7 @@ namespace widget {
 
 		int spritePointer = 0;
 		std::vector<sf::Sprite> spriteVector;
-		const std::vector<std::string> spriteResource = { "resource/walking-Sheet-2 Copy1.png", "resource/walking-Sheet-2 Copy2.png" , "resource/walking-Sheet-2 Copy3.png" , "resource/walking-Sheet-2 Copy4.png" , "resource/walking-Sheet-2 Copy5.png", "resource/walking-Sheet-2 Copy6.png", "resource/walking-Sheet-2 Copy7.png", "resource/walking-Sheet-2 Copy8.png" };
+		std::vector<std::string> spriteResource = { "C:/Users/likyl/source/repos/SFMLTest3/SFMLTest3/resource/walking-Sheet-2 Copy1.png", "resource/walking-Sheet-2 Copy2.png" , "resource/walking-Sheet-2 Copy3.png" , "resource/walking-Sheet-2 Copy4.png" , "resource/walking-Sheet-2 Copy5.png", "resource/walking-Sheet-2 Copy6.png", "resource/walking-Sheet-2 Copy7.png", "resource/walking-Sheet-2 Copy8.png" };
 
 		std::vector<sf::Texture> textureVector;
 	};

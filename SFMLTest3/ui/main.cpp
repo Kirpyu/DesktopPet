@@ -8,7 +8,8 @@
 #include <windows.h>
 #include <commdlg.h>
 #include <iostream>
-
+#include <locale>
+#include <codecvt>
 #include <Dwmapi.h>
 #pragma comment (lib, "Dwmapi.lib")
 
@@ -30,7 +31,10 @@ void createPet() {
     pet.initPet();
 }
 
-void openFile() {
+std::vector<std::string> openFile() {
+
+    std::vector<std::string> tempVector;
+
     OPENFILENAME ofn;       // common dialog box structure
     wchar_t szFile[260];       // buffer for file name
 
@@ -59,10 +63,39 @@ void openFile() {
             //since pointer does not move yet, print the current one
             std::wcout << directory + L"\\" + str << std::endl;
 
+            //setup converter
+            using convert_type = std::codecvt_utf8<wchar_t>;
+            std::wstring_convert<convert_type, wchar_t> converter;
+
+            //use converter (.to_bytes: wstr->str, .from_bytes: str->wstr)
+            std::string convertedString = converter.to_bytes(directory + L"\\" + str);
+
+            tempVector.push_back(convertedString);
+
             //go to the next 
             str += (filename.length() + 1);
         }
     }
+
+    return tempVector;
+}
+
+void createCustomPet() {
+
+    sf::RenderWindow window(sf::VideoMode(72, 72), "Desktop Cat", sf::Style::None);
+
+    MARGINS margins;
+    margins.cxLeftWidth = -1;
+
+    SetWindowLong(window.getSystemHandle(), GWL_STYLE, WS_POPUP | WS_VISIBLE);
+    DwmExtendFrameIntoClientArea(window.getSystemHandle(), &margins);
+
+    //creates a variable named pet and uses its constructor, similar to Pet pet = new Pet(window)
+    widget::Pet pet(window);
+
+    //to make this better in the future, change it the window size to whtever the selected sprite size is, then adjust from there
+    pet.changeResource(openFile());
+    pet.initPet();
 }
 
 int main() {
@@ -88,7 +121,8 @@ int main() {
 
                 if (event.mouseButton.button == sf::Mouse::Right)
                 {
-                    openFile();
+                    std::thread thread(&createCustomPet);
+                    thread.detach();
                 }
             }
         }

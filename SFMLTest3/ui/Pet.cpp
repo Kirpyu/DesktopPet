@@ -7,6 +7,8 @@
 #include <windows.h>
 #include <commdlg.h>
 #include <Dwmapi.h>
+#include <cstdlib>
+#include <ctime>
 #pragma comment (lib, "Dwmapi.lib")
 
 namespace widget {
@@ -20,6 +22,7 @@ namespace widget {
     }
 
     void Pet::initPet() {
+        srand((unsigned int)time(NULL));
         initSprite();
         sf::CircleShape shape(100.f);
         shape.setFillColor(sf::Color::Green);
@@ -106,6 +109,11 @@ namespace widget {
         spriteVector.push_back(sprite);
     }
 
+    void Pet::changeResource(std::vector<std::string> resourceVector)
+    {
+        spriteResource = resourceVector;
+    }
+
     //Checks if pet is inside mouse, then returns a bool value, kidna useless
     bool Pet::checkIfPetInMouse() {
         sf::Vector2i mousePos = sf::Mouse::getPosition();
@@ -124,6 +132,7 @@ namespace widget {
 
     //updates the pets texture and position
     void Pet::updatePet() {
+
         if ((rand() % 2) == 0) {
             //while the window's x coordinate is less than the window's size, then move pet towards the right, else move it left because theres no space on the right
             if (window.getPosition().x < desktopWidth - window.getSize().x) {
